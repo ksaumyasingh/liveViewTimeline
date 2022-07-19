@@ -8,7 +8,7 @@ defmodule ChripWeb.PostLive.Index do
   def mount(_params, _session, socket) do
     if connected?(socket), do: Timeline.subscribe()
 
-    {:ok, assign(socket, :posts, list_posts())}
+    {:ok, assign(socket, :posts, list_posts()), temporary_assigns: [posts: []]}
   end
 
   @impl true
@@ -46,6 +46,11 @@ defmodule ChripWeb.PostLive.Index do
   def handle_info({:post_created, post}, socket) do
     {:noreply, update(socket, :posts, fn posts -> [post | posts] end)}
   end
+
+  def handle_info({:post_updated, post}, socket) do
+    {:noreply, update(socket, :posts, fn posts -> [post | posts] end)}
+  end
+
   defp list_posts do
     Timeline.list_posts()
   end
